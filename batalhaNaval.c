@@ -1,51 +1,70 @@
-#include <stdio.h>
-
 // Define o tamanho do tabuleiro e do navio
 #define TAMANHO_TABULEIRO 10
 #define TAMANHO_NAVIO 3
 
-// Função para exibir o tabuleiro
+// Define símbolos para água e navio
+#define AGUA 0
+#define NAVIO 1
+
+// Mostra o tabuleiro no terminal
 void exibirTabuleiro(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO]) {
-    printf("=== TABULEIRO BATALHA NAVAL ===\n");
     for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
         for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
             printf("%d ", tabuleiro[i][j]);
         }
         printf("\n");
     }
-    printf("=============================\n");
 }
 
-int main() {
-    int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
+// Verifica se é possível colocar um navio nessa posição
+int validarPosicao(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO], int linha, int coluna, int orientacao) {
+    for (int i = 0; i < TAMANHO_NAVIO; i++) {
+        int l = linha + (orientacao == 0 ? 0 : i);
+        int c = coluna + (orientacao == 0 ? i : 0);
 
-    // Inicializa o tabuleiro com 0 (água)
+        // Verifica se está dentro do tabuleiro
+        if (l >= TAMANHO_TABULEIRO || c >= TAMANHO_TABULEIRO) {
+            return 0;
+        }
+
+        // Verifica se já tem navio nessa posição
+        if (tabuleiro[l][c] == NAVIO) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// Coloca o navio no tabuleiro se a posição for válida
+void posicionarNavio(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO], int linha, int coluna, int orientacao) {
+    if (validarPosicao(tabuleiro, linha, coluna, orientacao)) {
+        for (int i = 0; i < TAMANHO_NAVIO; i++) {
+            int l = linha + (orientacao == 0 ? 0 : i);
+            int c = coluna + (orientacao == 0 ? i : 0);
+            tabuleiro[l][c] = NAVIO;
+        }
+    }
+}
+
+// Função principal
+int main() {
+    // Cria o tabuleiro e preenche com água
+    int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
     for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
         for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
-            tabuleiro[i][j] = 0;
+            tabuleiro[i][j] = AGUA;
         }
     }
 
-    // Coordenadas fixas dos navios
-    int linhaNavioH = 2, colunaNavioH = 2; // Navio horizontal
-    int linhaNavioV = 5, colunaNavioV = 5; // Navio vertical
+    // Posiciona 4 navios em posições fixas
+    posicionarNavio(tabuleiro, 0, 0, 0); // Horizontal
+    posicionarNavio(tabuleiro, 2, 3, 1); // Vertical
+    posicionarNavio(tabuleiro, 5, 5, 0);
+    posicionarNavio(tabuleiro, 8, 1, 1);
 
-    // Posiciona o navio horizontal
-    for (int i = 0; i < TAMANHO_NAVIO; i++) {
-        if (colunaNavioH + i < TAMANHO_TABULEIRO) {
-            tabuleiro[linhaNavioH][colunaNavioH + i] = 3;
-        }
-    }
-
-    // Posiciona o navio vertical
-    for (int i = 0; i < TAMANHO_NAVIO; i++) {
-        if (linhaNavioV + i < TAMANHO_TABULEIRO) {
-            tabuleiro[linhaNavioV + i][colunaNavioV] = 3;
-        }
-    }
-
-    // Exibe o tabuleiro final
+    // Mostra o tabuleiro final
     exibirTabuleiro(tabuleiro);
 
     return 0;
 }
+
